@@ -1,57 +1,65 @@
-#include <algorithm>
-#include <cstdio>
-#include <cstring>
 #include <iostream>
+#include <cstring>
+
 using namespace std;
-bool dp[100010];
-int a[110], c[110];
-bool q[100010];
-int main(int argc, char const* argv[]) {
-    int n, m;
-    while (~scanf("%d%d", &n, &m) && (n + m)) {
-        for (int i = 0; i < n; i++) {
-            scanf("%d", &a[i]);
-        }
-        for (int i = 0; i < n; i++) {
-            scanf("%d", &c[i]);
-        }
-        memset(dp, 0, sizeof(dp));
-        dp[0] = 1;
-        int ret = 0;
-        for (int i = 0; i < n; i++) {
-            if (c[i] == 1) {
-                for (int j = m; j >= a[i]; j--) {
-                    if (!dp[j] && dp[j - a[i]]) {
-                        ret++;
-                        dp[j] = 1;
-                    }
+
+const int MAXN = 105;
+const int MAXM = 100005;
+
+int A[MAXN];
+int C[MAXN];
+int dp[MAXM];
+int deque[MAXM];
+
+int multiPack(int n, int m) {
+    memset(dp, 0, sizeof(dp));
+    dp[0] = 1;
+    int res = 0;
+    for (int i = 0; i < n; ++i) {
+        if (C[i] == 1) {
+            for (int j = m; j >= A[i]; --j) {
+                if (!dp[j] && dp[j - A[i]]) {
+                    dp[j] = 1;
+                    ++res;
                 }
-            } else if (c[i] * a[i] >= m) {
-                for (int j = a[i]; j <= m; ++j) {
-                    if (!dp[j] && dp[j - a[i]]) {
-                        dp[j] = 1;
-                        ret++;
-                    }
+            }
+        } else if (A[i] * C[i] >= m) {
+            for (int j = A[i]; j <= m; ++j) {
+                if (!dp[j] && dp[j - A[i]]) {
+                    dp[j] = 1;
+                    ++res;
                 }
-            } else {
-                for (int mod = 0; mod < a[i]; mod++) {
-                    int l = 0, r = 0;
-                    int sum = 0;
-                    for (int j = mod; j <= m; j += a[i]) {
-                        if (r > l && r - l > c[i]) {
-                            sum -= q[l++];
-                        }
-                        sum += dp[j];
-                        q[r++] = dp[j];
-                        if (!dp[j] && sum) {
-                            dp[j] = 1;
-                            ret++;
-                        }
+            }
+        } else {
+            for (int mod = 0; mod < A[i]; ++mod) {
+                int left = 0, right = 0;
+                int sum = 0;
+                for (int j = mod; j <= m; j += A[i]) {
+                    if (right > left && right - left > C[i]) {
+                        sum -= deque[left++];
+                    }
+                    deque[right++] = dp[j];
+                    sum += dp[j];
+                    if (!dp[j] && sum) {
+                        dp[j] = 1;
+                        ++res;
                     }
                 }
             }
         }
-        printf("%d\n", ret);
     }
-    return 0;
+    return res;
+}
+
+int main() {
+    int n, m;
+    while ((cin >> n >> m) && n != 0 && m != 0) {
+        for (int i = 0; i < n; ++i) {
+            cin >> A[i];
+        }
+        for (int i = 0; i < n; ++i) {
+            cin >> C[i];
+        }
+        cout << multiPack(n, m) << endl;
+    }
 }

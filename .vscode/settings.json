@@ -8,6 +8,7 @@
         "string": "cpp",
         "chrono": "cpp",
         "limits": "cpp",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "iosfwd": "cpp"
     }
 }
